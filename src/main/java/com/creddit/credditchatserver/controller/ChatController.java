@@ -1,2 +1,4 @@
-package com.creddit.credditchatserver.controller;public class ChatController {
+package com.creddit.credditchatserver.controller;
+
+public class ChatController {
 }
