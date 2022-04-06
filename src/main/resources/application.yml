@@ -1,3 +1,4 @@
 spring:
-  profiles:
-    include: datebase
+  config:
+    activate:
+      on-profile: jpa-config

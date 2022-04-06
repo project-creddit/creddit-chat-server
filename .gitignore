@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### application ###
-/src/main/resources/application-datebase.yml
+src/main/resources/application-jpa-config.yml
