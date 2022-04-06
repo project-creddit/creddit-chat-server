@@ -1,2 +1,5 @@
-package com.creddit.credditchatserver.entity;public enum ChatMessageType {
+package com.creddit.credditchatserver.entity;
+
+public enum ChatMessageType {
+    MESSAGE, LEAVE, JOIN
 }
