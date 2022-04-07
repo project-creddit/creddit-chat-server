@@ -1,4 +1,3 @@
 spring:
-  config:
-    activate:
-      on-profile: jpa-config
+  profiles:
+    include: jpa-config
