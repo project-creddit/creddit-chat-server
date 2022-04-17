@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
@@ -13,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ChatRoom {
-    String target;
-    String targetToken;
-    List<Message> messages;
+    private String target;
+    private List<Message> messages;
 }
