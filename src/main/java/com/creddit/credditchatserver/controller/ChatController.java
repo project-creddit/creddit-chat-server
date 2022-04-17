@@ -24,7 +24,6 @@ public class ChatController {
 
     @GetMapping("/register/{myId}/{userId}")
     public ResponseEntity<?> registerChatRoom(@PathVariable String userId, @PathVariable String myId) throws Exception{
-
         chatService.createChatRoom(userId, myId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
