@@ -1,3 +1,2 @@
-spring:
-  profiles:
-    include: jpa-config
+server:
+  port: 8000
