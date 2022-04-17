@@ -9,8 +9,6 @@ import com.creddit.credditchatserver.trace.Trace;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,10 +32,10 @@ public class ChatService {
             ChatRoom chatRoom = new ChatRoom(message.getReceiver(), new ArrayList<>());
             updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
         }
-        if (hasReceiverMessages(chatRoomMaps, message)) { // 상대방에게 대화 데이터가 있을때
+        if (hasReceiverMessages(chatRoomMaps, message)) {
             ChatRoom chatRoom = chatRoomMaps.get(message.getReceiver(), message.getSender());
             updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
-        } else { // 상대방에게 대화 데이터가 없을때
+        } else {
             ChatRoom chatRoom = new ChatRoom(message.getSender(), new ArrayList<>());
             updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
         }
