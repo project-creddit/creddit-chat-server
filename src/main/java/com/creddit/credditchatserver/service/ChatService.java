@@ -42,7 +42,7 @@ public class ChatService {
     }
 
     public void createChatRoom(String userId, String myId) throws Exception{
-        if(Boolean.FALSE.equals(userTemplate.hasKey(userId + ":info"))){
+        if(!userTemplate.hasKey(userId + ":info")){
             throw new UserException(UserExceptionType.NOT_FOUNT_USER);
         }
         HashOperations<String, String, ChatRoom> chatRoomMaps = chatRoomRedisTemplate.opsForHash();
