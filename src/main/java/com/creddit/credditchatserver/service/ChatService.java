@@ -25,20 +25,28 @@ public class ChatService {
     @Trace
     public void createChatMessage(Message message) {
         HashOperations<String, String, ChatRoom> chatRoomMaps = chatRoomRedisTemplate.opsForHash();
-        if (hasSenderMessages(chatRoomMaps, message)) {
-            ChatRoom chatRoom = chatRoomMaps.get(message.getSender(), message.getReceiver());
-            updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
-        } else {
-            ChatRoom chatRoom = new ChatRoom(message.getReceiver(), new ArrayList<>());
-            updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
-        }
-        if (hasReceiverMessages(chatRoomMaps, message)) {
-            ChatRoom chatRoom = chatRoomMaps.get(message.getReceiver(), message.getSender());
-            updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
-        } else {
-            ChatRoom chatRoom = new ChatRoom(message.getSender(), new ArrayList<>());
-            updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
-        }
+        String sender = message.getSender();
+        String receiver = message.getReceiver();
+        boolean hasSenderMessages = hasMessages(chatRoomMaps, sender, receiver);
+        boolean hasReceiverMessages = hasMessages(chatRoomMaps, receiver, sender);
+        getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, hasSenderMessages);
+        getChatRoomAndUpdateMessage(message, chatRoomMaps, receiver, sender, hasReceiverMessages);
+    }
+    private void getChatRoomAndUpdateMessage(
+            Message message,
+            HashOperations<String, String, ChatRoom> chatRoomMaps,
+            String myId,
+            String userId,
+            boolean hasMessages
+    ) {
+        ChatRoom chatRoom = hasMessages == true ? chatRoomMaps.get(myId, userId) : new ChatRoom(userId, new ArrayList<>());
+        updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
+    }
+    private boolean hasMessages(
+            HashOperations<String, String, ChatRoom> chatRoomMaps,
+            String myId,
+            String userId) {
+        return chatRoomMaps.hasKey(myId, userId);
     }
 
     public void createChatRoom(String userId, String myId) throws Exception{
@@ -56,18 +64,6 @@ public class ChatService {
         HashOperations<String, String, ChatRoom> hashOperations = chatRoomRedisTemplate.opsForHash();
         Map<String, ChatRoom> mapper = hashOperations.entries(userName);
         return mapper.values();
-    }
-
-    private boolean hasSenderMessages(
-            HashOperations<String, String, ChatRoom> chatRoomMaps,
-            Message message) {
-        return chatRoomMaps.hasKey(message.getSender(), message.getReceiver());
-    }
-
-    private boolean hasReceiverMessages(
-            HashOperations<String, String, ChatRoom> chatRoomMaps,
-            Message message) {
-        return chatRoomMaps.hasKey(message.getReceiver(), message.getSender());
     }
 
     private void updateChatRoomAndMessages(
