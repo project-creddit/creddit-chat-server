@@ -28,7 +28,7 @@ public class ChatController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/{userName}/ChatRooms")
+    @GetMapping("/{userName}/chatrooms")
     public ResponseEntity<Collection<ChatRoom>> fetchAllChatRooms(@PathVariable String userName){
         Collection<ChatRoom> chatRooms = chatService.getChatRooms(userName);
         return new ResponseEntity<>(chatRooms, HttpStatus.OK);
