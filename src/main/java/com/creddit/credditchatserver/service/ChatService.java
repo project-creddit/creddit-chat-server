@@ -7,6 +7,7 @@ import com.creddit.credditchatserver.exception.user.UserException;
 import com.creddit.credditchatserver.exception.user.UserExceptionType;
 import com.creddit.credditchatserver.trace.Trace;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ChatService {
 
     private RedisTemplate<String, ChatRoom> chatRoomRedisTemplate;
@@ -29,18 +32,20 @@ public class ChatService {
         String receiver = message.getReceiver();
         boolean hasSenderMessages = hasMessages(chatRoomMaps, sender, receiver);
         boolean hasReceiverMessages = hasMessages(chatRoomMaps, receiver, sender);
-        getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, hasSenderMessages);
-        getChatRoomAndUpdateMessage(message, chatRoomMaps, receiver, sender, hasReceiverMessages);
+        getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, hasSenderMessages, "SENDER");
+        getChatRoomAndUpdateMessage(message, chatRoomMaps, receiver, sender, hasReceiverMessages, "RECEIVER");
+
     }
     private void getChatRoomAndUpdateMessage(
             Message message,
             HashOperations<String, String, ChatRoom> chatRoomMaps,
             String myId,
             String userId,
-            boolean hasMessages
+            boolean hasMessages,
+            String messageType
     ) {
         ChatRoom chatRoom = hasMessages == true ? chatRoomMaps.get(myId, userId) : new ChatRoom(userId, new ArrayList<>());
-        updateChatRoomAndMessages(chatRoomMaps, chatRoom, message);
+        updateChatRoomAndMessages(chatRoomMaps, chatRoom, message, messageType);
     }
     private boolean hasMessages(
             HashOperations<String, String, ChatRoom> chatRoomMaps,
@@ -66,12 +71,18 @@ public class ChatService {
         return mapper.values();
     }
 
+    @Trace
     private void updateChatRoomAndMessages(
             HashOperations<String, String, ChatRoom> chatRoomMaps,
             ChatRoom chatRoom,
-            Message message) {
+            Message message,
+            String messageType) {
         chatRoom.getMessages().add(message);
-        chatRoomMaps.put(message.getReceiver(), message.getSender(), chatRoom);
+        if (Objects.equals(messageType, "SENDER")) {
+            chatRoomMaps.put(message.getSender(), message.getReceiver(), chatRoom);
+        } else {
+            chatRoomMaps.put(message.getReceiver(), message.getSender(), chatRoom);
+        }
     }
 
 }
