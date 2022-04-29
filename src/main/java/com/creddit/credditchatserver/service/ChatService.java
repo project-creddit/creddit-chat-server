@@ -55,9 +55,10 @@ public class ChatService {
     }
 
     public void createChatRoom(String userId, String myId) throws Exception{
-        if(!userTemplate.hasKey(userId + ":info")){
-            throw new UserException(UserExceptionType.NOT_FOUNT_USER);
-        }
+//        if(!userTemplate.hasKey(userId + ":info")){
+//            throw new UserException(UserExceptionType.NOT_FOUNT_USER);
+//        }
+
         HashOperations<String, String, ChatRoom> chatRoomMaps = chatRoomRedisTemplate.opsForHash();
         if(chatRoomMaps.hasKey(myId, userId)){
             throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);

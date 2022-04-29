@@ -5,6 +5,8 @@
 
 
 ## implementation
+0. `Docker` 설치 
+
 1. `Redis Server` 시작하기
 ```
 docker run --name myredis -d -p 6379:6379 redis
