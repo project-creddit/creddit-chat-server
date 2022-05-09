@@ -12,10 +12,7 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +21,9 @@ public class ChatService {
 
     private RedisTemplate<String, ChatRoom> chatRoomRedisTemplate;
     private RedisTemplate<String, User> userTemplate;
+
+//    @Trace
+//    public void leftChatRoom()
 
     @Trace
     public void createChatMessage(Message message) {
@@ -44,7 +44,13 @@ public class ChatService {
             boolean hasMessages,
             String messageType
     ) {
-        ChatRoom chatRoom = hasMessages == true ? chatRoomMaps.get(myId, userId) : new ChatRoom(userId, new ArrayList<>());
+        ChatRoom chatRoom = hasMessages == true ? chatRoomMaps.get(myId, userId) : new ChatRoom(
+                UUID.randomUUID().toString(),
+                userId,
+                new ArrayList<>(Arrays.asList(myId, userId)),
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
         updateChatRoomAndMessages(chatRoomMaps, chatRoom, message, messageType);
     }
     private boolean hasMessages(
@@ -63,7 +69,12 @@ public class ChatService {
         if(chatRoomMaps.hasKey(myId, userId)){
             throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);
         }
-        chatRoomMaps.put(myId, userId, new ChatRoom(userId, new ArrayList<>()));
+        chatRoomMaps.put(myId, userId, new ChatRoom(
+                UUID.randomUUID().toString(),
+                userId,
+                new ArrayList<>(Arrays.asList(myId, userId)),
+                new ArrayList<>(),
+                new ArrayList<>()));
     }
 
     public Collection<ChatRoom> getChatRooms(String userName){
