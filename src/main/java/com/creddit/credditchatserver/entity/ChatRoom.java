@@ -12,6 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ChatRoom {
+    private String id;
     private String target;
+    private List<String> users;
+    private List<String> leftUsers;
     private List<Message> messages;
 }
