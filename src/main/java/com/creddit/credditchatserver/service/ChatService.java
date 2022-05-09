@@ -1,10 +1,12 @@
 package com.creddit.credditchatserver.service;
 
+import com.creddit.credditchatserver.dto.ChatRoomIdDto;
 import com.creddit.credditchatserver.entity.ChatRoom;
 import com.creddit.credditchatserver.entity.Message;
 import com.creddit.credditchatserver.entity.User;
 import com.creddit.credditchatserver.exception.user.UserException;
 import com.creddit.credditchatserver.exception.user.UserExceptionType;
+//import com.creddit.credditchatserver.repository.ChatRoomRepository;
 import com.creddit.credditchatserver.trace.Trace;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +21,21 @@ import java.util.*;
 @Slf4j
 public class ChatService {
 
+//    private ChatRoomRepository chatRoomRepository;
     private RedisTemplate<String, ChatRoom> chatRoomRedisTemplate;
     private RedisTemplate<String, User> userTemplate;
 
-//    @Trace
-//    public void leftChatRoom()
+    @Trace
+    public ChatRoom leftChatRoom(String userName, ChatRoomIdDto chatRoomId) {
+        HashOperations<String, String, ChatRoom> hashOperations = chatRoomRedisTemplate.opsForHash();
+        Map<String, ChatRoom> mapper = hashOperations.entries(userName);
+        ChatRoom chatRoom = mapper.values().stream().filter(s -> s.getId().equals(chatRoomId.getChatRoomId())).findFirst().get();
+        List<String> leftUsers = chatRoom.getLeftUsers();
+        leftUsers.add(userName);
+        chatRoom.setLeftUsers(leftUsers);
+        hashOperations.put(userName, chatRoom.getTarget() ,chatRoom);
+        return chatRoom;
+    }
 
     @Trace
     public void createChatMessage(Message message) {
@@ -66,9 +78,15 @@ public class ChatService {
 //        }
 
         HashOperations<String, String, ChatRoom> chatRoomMaps = chatRoomRedisTemplate.opsForHash();
-        if(chatRoomMaps.hasKey(myId, userId)){
+
+        ChatRoom chatRoom = chatRoomMaps.get(myId, userId);
+        if (chatRoom.getLeftUsers().contains(myId)) {
             throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);
+
         }
+//        if(chatRoomMaps.hasKey(myId, userId)){
+//            throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);
+//        }
         chatRoomMaps.put(myId, userId, new ChatRoom(
                 UUID.randomUUID().toString(),
                 userId,
@@ -85,15 +103,17 @@ public class ChatService {
 
     @Trace
     private void updateChatRoomAndMessages(
-            HashOperations<String, String, ChatRoom> chatRoomMaps,
+            HashOperations<String, String,  ChatRoom> chatRoomMaps,
             ChatRoom chatRoom,
             Message message,
             String messageType) {
         chatRoom.getMessages().add(message);
         if (Objects.equals(messageType, "SENDER")) {
             chatRoomMaps.put(message.getSender(), message.getReceiver(), chatRoom);
+//            chatRoomMaps.put()
         } else {
             chatRoomMaps.put(message.getReceiver(), message.getSender(), chatRoom);
+//            chatRoomMaps.put(new ArrayList<>(Arrays.asList(message.getSender(), message.getSender())), message.getSender(), chatRoom);
         }
     }
 
