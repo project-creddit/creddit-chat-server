@@ -39,9 +39,9 @@ public class ChatController {
     }
 
     @GetMapping("/{userName}/chatrooms/{targetUser}/messages")
-    public ResponseEntity<Stream<ChatRoom>> fetchAllMessages(@PathVariable String userName, @PathVariable String targetUser){
+    public ResponseEntity<ChatRoom> fetchAllMessages(@PathVariable String userName, @PathVariable String targetUser){
         Collection<ChatRoom> chatRooms = chatService.getChatRooms(userName);
-        Stream<ChatRoom> messages = chatRooms.stream().filter(s -> s.getTarget().equals(targetUser));
+        ChatRoom messages = chatRooms.stream().filter(s -> s.getTarget().equals(targetUser)).findFirst().get();
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 }
