@@ -79,14 +79,14 @@ public class ChatService {
 
         HashOperations<String, String, ChatRoom> chatRoomMaps = chatRoomRedisTemplate.opsForHash();
 
-        ChatRoom chatRoom = chatRoomMaps.get(myId, userId);
-        if (chatRoom.getLeftUsers().contains(myId)) {
-            throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);
-
-        }
-//        if(chatRoomMaps.hasKey(myId, userId)){
+//        ChatRoom chatRoom = chatRoomMaps.get(myId, userId);
+//        if (chatRoom.getLeftUsers().contains(myId)) {
 //            throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);
+//
 //        }
+        if(chatRoomMaps.hasKey(myId, userId)){
+            throw new UserException(UserExceptionType.ALREADY_EXIST_CHAT_USER);
+        }
         chatRoomMaps.put(myId, userId, new ChatRoom(
                 UUID.randomUUID().toString(),
                 userId,
