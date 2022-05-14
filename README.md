@@ -3,7 +3,6 @@
 <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=Spring&logoColor=white">
 <img src="https://img.shields.io/badge/Redis-F80000?style=for-the-badge&logo=Redis&logoColor=white">
 
-
 ## implementation
 0. `Docker` 설치 
 
@@ -18,3 +17,6 @@ docker ps
 ```
 
 3. ChatService 구동
+
+## API Guide
+- [Documentation](https://github.com/project-creddit/creddit-chat-server/blob/feature/profile-api/docs/API_GUIDE.md)
