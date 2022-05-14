@@ -3,6 +3,7 @@ package com.creddit.credditchatserver.controller;
 import com.creddit.credditchatserver.entity.Message;
 import com.creddit.credditchatserver.service.ChatService;
 import com.creddit.credditchatserver.trace.TraceAspect;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Import;
@@ -21,9 +22,9 @@ public class MessageController {
 
 
     @MessageMapping("/send")
-    public void SendToMessage(Message msg) {
+    public void SendToMessage(Message msg) throws JsonProcessingException {
         chatService.createChatMessage(msg);
-        simpMessagingTemplate.convertAndSend("/topic/" + msg.getReceiver(), msg);
+        simpMessagingTemplate.convertAndSend("/topic/" + msg.getChatRoomId(), msg);
     }
 
 }
