@@ -94,9 +94,9 @@ axios({
 
 ### 채팅을 할 유저를 등록하고 채팅방 생성 API
 
-|  메소드   |                       경로                        |
-|:------:|:-----------------------------------------------:|
-| `POST` | `REACT_APP_CHAT_API_BASE_URL/register/chatroom` |
+|  메소드   |                          경로                          |
+|:------:|:----------------------------------------------------:|
+| `POST` | `REACT_APP_CHAT_API_BASE_URL/chat/register` |
 
 #### Request Header
 
