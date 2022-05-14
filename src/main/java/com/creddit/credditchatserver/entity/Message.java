@@ -12,6 +12,7 @@ public class Message {
 
     private String sender;
     private String receiver;
+    private String chatRoomId;
     private String message;
     private String createdDate;
 
