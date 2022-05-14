@@ -73,7 +73,6 @@
 ]
 ```
 
-
 #### example
 ```js
 axios({
@@ -110,6 +109,84 @@ axios({
 {
     "myId": "qq22",
     "userId":"qq33"
+}
+```
+
+<br />
+
+### ChatRoom 조회 API
+| 메소드 |                               경로                                |
+| :----: |:---------------------------------------------------------------:|
+| `GET` | `REACT_APP_CHAT_API_BASE_URL/${userId}/chatrooms/${chatRoomId}` |
+
+#### Response
+```json
+{
+    "id": "2ee8f7d7-c589-4f3d-85d7-cf2ec0b90fb3",
+    "target": "qq33",
+    "users": [
+        {
+            "nickname": "qq22",
+            "introduction": null,
+            "image": {
+                "imgName": null,
+                "imgUrl": null
+            }
+        },
+        {
+            "nickname": "qq33",
+            "introduction": null,
+            "image": {
+                "imgName": null,
+                "imgUrl": null
+            }
+        }
+    ],
+    "leftUsers": [],
+    "messages": []
+}
+```
+
+<br />
+
+### ChatRoom 나가기 API
+|  메소드   |                             경로                             |
+|:------:|:----------------------------------------------------------:|
+| `POST` | `REACT_APP_CHAT_API_BASE_URL/chat/${userId}/chatroom/left` |
+
+#### Request Header
+
+|     변수      |  타입  | 설명               |
+| :-----------: | :----: | ------------------ |
+| Authorization | string | 인증 헤더 (Bearer) |
+
+#### Request Body
+```json
+{
+    "id": "2ee8f7d7-c589-4f3d-85d7-cf2ec0b90fb3",
+    "target": "qq33",
+    "users": [
+        {
+            "nickname": "qq22",
+            "introduction": null,
+            "image": {
+                "imgName": null,
+                "imgUrl": null
+            }
+        },
+        {
+            "nickname": "qq33",
+            "introduction": null,
+            "image": {
+                "imgName": null,
+                "imgUrl": null
+            }
+        }
+    ],
+    "leftUsers": [
+        "qq22"
+    ],
+    "messages": []
 }
 ```
 

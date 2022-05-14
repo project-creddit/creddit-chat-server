@@ -44,10 +44,10 @@ public class ChatController {
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
-    @GetMapping("/{userName}/chatrooms/{targetUser}/messages")
-    public ResponseEntity<ChatRoom> fetchAllMessages(@PathVariable String userName, @PathVariable String targetUser) throws JsonProcessingException {
+    @GetMapping("/{userName}/chatrooms/{chatRoomId}")
+    public ResponseEntity<ChatRoom> fetchAllMessages(@PathVariable String userName, @PathVariable String chatRoomId) throws JsonProcessingException {
         Collection<ChatRoom> chatRooms = chatService.getChatRooms(userName);
-        ChatRoom messages = chatRooms.stream().filter(s -> s.getTarget().equals(targetUser)).findFirst().get();
+        ChatRoom messages = chatRooms.stream().filter(s -> s.getId().equals(chatRoomId)).findFirst().get();
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
