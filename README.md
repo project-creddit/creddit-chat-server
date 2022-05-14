@@ -19,4 +19,4 @@ docker ps
 3. ChatService 구동
 
 ## API Guide
-- [Documentation](https://github.com/project-creddit/creddit-chat-server/blob/feature/profile-api/docs/API_GUIDE.md)
+- [Documentation](https://github.com/project-creddit/creddit-chat-server/blob/develop/docs/API_GUIDE.md)
