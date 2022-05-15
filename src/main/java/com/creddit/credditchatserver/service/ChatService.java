@@ -57,8 +57,8 @@ public class ChatService {
         String receiver = message.getReceiver();
         String chatRoomId = message.getChatRoomId();
 
-        boolean hasSenderMessages = hasMessages(chatRoomMaps, sender, receiver);
-        boolean hasReceiverMessages = hasMessages(chatRoomMaps, receiver, sender);
+        boolean hasSenderMessages = hasMessages(chatRoomMaps, sender, receiver, chatRoomId);
+        boolean hasReceiverMessages = hasMessages(chatRoomMaps, receiver, sender, chatRoomId);
         getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, chatRoomId, hasSenderMessages, "SENDER");
         getChatRoomAndUpdateMessage(message, chatRoomMaps, receiver, sender, chatRoomId, hasReceiverMessages, "RECEIVER");
 
@@ -94,9 +94,9 @@ public class ChatService {
     ) throws JsonProcessingException {
         ProfileResponseDto myProfiles = getProfileInformation(myId);
         ProfileResponseDto userProfiles = getProfileInformation(userId);
-        ChatRoom chatRoom = hasMessages == true ? chatRoomMaps.get(myId, userId) : new ChatRoom(
+        ChatRoom chatRoom = hasMessages == true ? chatRoomMaps.get(myId, chatRoomId) : new ChatRoom(
                 chatRoomId,
-                myId,
+                userId,
                 new ArrayList<>(Arrays.asList(myProfiles, userProfiles)),
                 new ArrayList<>(),
                 new ArrayList<>()
@@ -106,8 +106,9 @@ public class ChatService {
     private boolean hasMessages(
             HashOperations<String, String, ChatRoom> chatRoomMaps,
             String myId,
-            String userId) {
-        return chatRoomMaps.hasKey(myId, userId);
+            String userId,
+            String chatRoomId) {
+        return chatRoomMaps.hasKey(myId, chatRoomId);
     }
 
     public void createChatRoom(ChatRoomRegisterDto chatRoomRegisterDto) throws Exception{
