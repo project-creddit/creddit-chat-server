@@ -22,10 +22,13 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -35,6 +38,7 @@ public class ChatService {
 
     private RedisTemplate<String, ChatRoom> chatRoomRedisTemplate;
     private RedisTemplate<String, User> userTemplate;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Trace
     public ChatRoom leftChatRoom(String userName, ChatRoomIdDto chatRoomId) {
@@ -42,11 +46,24 @@ public class ChatService {
         Map<String, ChatRoom> mapper = hashOperations.entries(userName);
         ChatRoom chatRoom = mapper.values().stream().filter(s -> s.getId().equals(chatRoomId.getChatRoomId())).findFirst().get();
         hashOperations.delete(userName, chatRoomId.getChatRoomId());
-        Object value = hashOperations.get(userName, chatRoomId.getChatRoomId());
+
         List<String> leftUsers = chatRoom.getLeftUsers();
+        ProfileResponseDto otherUser = chatRoom.getUsers().stream().filter(s -> !s.getNickname().equals(userName)).findFirst().get();
         leftUsers.add(userName);
         chatRoom.setLeftUsers(leftUsers);
-        hashOperations.put(userName, chatRoomId.getChatRoomId() ,chatRoom);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        Message message = new Message(
+        "CHAT_MANAGER",
+        "CHAT_MANAGER", chatRoomId.getChatRoomId(),
+        userName + "님이 나가셨습니다",
+                currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+
+        );
+        chatRoom.getMessages().add(message);
+
+        hashOperations.put(otherUser.getNickname(), chatRoomId.getChatRoomId() ,chatRoom);
+        simpMessagingTemplate.convertAndSend("/topic/" + message.getChatRoomId(), message);
         return chatRoom;
     }
 
