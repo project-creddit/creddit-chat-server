@@ -163,6 +163,13 @@ axios({
 #### Request Body
 ```json
 {
+  "chatRoomId": "2ee8f7d7-c589-4f3d-85d7-cf2ec0b90fb3"
+}
+```
+
+#### Response Body
+```json
+{
     "id": "2ee8f7d7-c589-4f3d-85d7-cf2ec0b90fb3",
     "target": "qq33",
     "users": [
