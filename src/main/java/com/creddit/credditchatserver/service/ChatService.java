@@ -19,6 +19,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.*;
@@ -38,6 +39,7 @@ public class ChatService {
 
     private RedisTemplate<String, ChatRoom> chatRoomRedisTemplate;
     private RedisTemplate<String, User> userTemplate;
+    private Environment env;
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Trace
@@ -93,7 +95,7 @@ public class ChatService {
     @Trace
     private ProfileResponseDto getProfileInformation(String name) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
-        String API_URL = "http://localhost:8080/profile/show/"+name;
+        String API_URL = env.getProperty("main_api_url")+name;
         List<ProfileResponseDto> profiles = new ArrayList<>();
 
         HttpHeaders httpHeaders = new HttpHeaders();

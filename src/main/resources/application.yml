@@ -1,2 +1,4 @@
 server:
   port: 8000
+  
+main_api_url : "http://localhost:8080/profile/show/"
