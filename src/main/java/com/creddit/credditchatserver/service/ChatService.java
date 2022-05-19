@@ -57,7 +57,7 @@ public class ChatService {
         "CHAT_MANAGER",
         "CHAT_MANAGER", chatRoomId.getChatRoomId(),
         userName + "님이 나가셨습니다",
-                currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                currentDateTime.format(DateTimeFormatter.ofPattern("yyyyy년 MM월 dd일 HH:mm"))
 
         );
         chatRoom.getMessages().add(message);
@@ -76,8 +76,12 @@ public class ChatService {
 
         boolean hasSenderMessages = hasMessages(chatRoomMaps, sender, receiver, chatRoomId);
         boolean hasReceiverMessages = hasMessages(chatRoomMaps, receiver, sender, chatRoomId);
-        getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, chatRoomId, hasSenderMessages, "SENDER");
-        getChatRoomAndUpdateMessage(message, chatRoomMaps, receiver, sender, chatRoomId, hasReceiverMessages, "RECEIVER");
+        if (!sender.equals(receiver)) {
+            getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, chatRoomId, hasSenderMessages, "SENDER");
+            getChatRoomAndUpdateMessage(message, chatRoomMaps, receiver, sender, chatRoomId, hasReceiverMessages, "RECEIVER");
+        } else {
+            getChatRoomAndUpdateMessage(message, chatRoomMaps, sender, receiver, chatRoomId, hasSenderMessages, "SENDER");
+        }
 
     }
     @Trace
@@ -164,11 +168,16 @@ public class ChatService {
             Message message,
             String messageType) {
         chatRoom.getMessages().add(message);
-        if (Objects.equals(messageType, "SENDER")) {
+        if (message.getSender().equals(message.getReceiver())) {
             chatRoomMaps.put(message.getSender(), chatRoom.getId(), chatRoom);
-        } else {
-            chatRoomMaps.put(message.getReceiver(), chatRoom.getId(), chatRoom);
+        }
+        else {
+            if (Objects.equals(messageType, "SENDER")) {
+                chatRoomMaps.put(message.getSender(), chatRoom.getId(), chatRoom);
+            } else {
+                chatRoomMaps.put(message.getReceiver(), chatRoom.getId(), chatRoom);
 //            chatRoomMaps.put(new ArrayList<>(Arrays.asList(message.getSender(), message.getSender())), message.getSender(), chatRoom);
+            }
         }
     }
 
