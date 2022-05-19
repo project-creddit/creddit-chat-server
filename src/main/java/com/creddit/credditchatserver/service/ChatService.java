@@ -47,23 +47,29 @@ public class ChatService {
         ChatRoom chatRoom = mapper.values().stream().filter(s -> s.getId().equals(chatRoomId.getChatRoomId())).findFirst().get();
         hashOperations.delete(userName, chatRoomId.getChatRoomId());
 
-        List<String> leftUsers = chatRoom.getLeftUsers();
-        ProfileResponseDto otherUser = chatRoom.getUsers().stream().filter(s -> !s.getNickname().equals(userName)).findFirst().get();
-        leftUsers.add(userName);
-        chatRoom.setLeftUsers(leftUsers);
-        LocalDateTime currentDateTime = LocalDateTime.now();
 
-        Message message = new Message(
-        "CHAT_MANAGER",
-        "CHAT_MANAGER", chatRoomId.getChatRoomId(),
-        userName + "님이 나가셨습니다",
-                currentDateTime.format(DateTimeFormatter.ofPattern("yyyyy년 MM월 dd일 HH:mm"))
+        if(!chatRoom.getTarget().equals(userName)) {
+            ChatRoom chatRoomOtherUser = mapper.values().stream().filter(s -> s.getId().equals(chatRoomId.getChatRoomId())).findFirst().get();
+            List<String> leftUsers = chatRoomOtherUser.getLeftUsers();
+            ProfileResponseDto otherUser = chatRoomOtherUser.getUsers().stream().filter(s -> !s.getNickname().equals(userName)).findFirst().get();
+            hashOperations.delete(otherUser.getNickname(), chatRoomId.getChatRoomId());
+            leftUsers.add(userName);
+            chatRoomOtherUser.setTarget(userName);
+            chatRoomOtherUser.setLeftUsers(leftUsers);
+            LocalDateTime currentDateTime = LocalDateTime.now();
 
-        );
-        chatRoom.getMessages().add(message);
+            Message message = new Message(
+                    "CHAT_MANAGER",
+                    "CHAT_MANAGER", chatRoomId.getChatRoomId(),
+                    userName + "님이 나가셨습니다",
+                    currentDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"))
 
-        hashOperations.put(otherUser.getNickname(), chatRoomId.getChatRoomId() ,chatRoom);
-        simpMessagingTemplate.convertAndSend("/topic/" + message.getChatRoomId(), message);
+            );
+            chatRoomOtherUser.getMessages().add(message);
+
+            hashOperations.put(otherUser.getNickname(), chatRoomId.getChatRoomId(), chatRoomOtherUser);
+            simpMessagingTemplate.convertAndSend("/topic/" + message.getChatRoomId(), message);
+        }
         return chatRoom;
     }
 
