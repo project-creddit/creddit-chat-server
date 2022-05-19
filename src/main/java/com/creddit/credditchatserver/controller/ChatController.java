@@ -47,7 +47,9 @@ public class ChatController {
     @GetMapping("/{userName}/chatrooms/{chatRoomId}")
     public ResponseEntity<ChatRoom> fetchAllMessages(@PathVariable String userName, @PathVariable String chatRoomId) throws JsonProcessingException {
         Collection<ChatRoom> chatRooms = chatService.getChatRooms(userName);
-        ChatRoom messages = chatRooms.stream().filter(s -> s.getId().equals(chatRoomId)).findFirst().get();
+
+        ChatRoom messages = chatRooms.stream().filter(s -> s.getId().equals(chatRoomId)).findFirst().orElse(null);
+
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
