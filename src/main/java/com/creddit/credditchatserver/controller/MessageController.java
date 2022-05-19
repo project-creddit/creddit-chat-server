@@ -24,7 +24,9 @@ public class MessageController {
     @MessageMapping("/send")
     public void SendToMessage(Message msg) throws JsonProcessingException {
         chatService.createChatMessage(msg);
-        simpMessagingTemplate.convertAndSend("/topic/" + msg.getChatRoomId(), msg);
+        if(!msg.getSender().equals(msg.getReceiver())) {
+            simpMessagingTemplate.convertAndSend("/topic/" + msg.getChatRoomId(), msg);
+        }
     }
 
 }
